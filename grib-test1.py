@@ -29,6 +29,47 @@ retainDwdTree = True
 dwdPattern = "{model!L}/grib/{modelrun:>02d}/{param!L}"
 failedFiles = []
 
+def getCurrentRun(now_utc):
+
+        '''Gets the number of the current run by current time. 
+        The latest run is fully available ~2h after initialisation.
+        e.g. The 09 run will be finished at approx 11:00 UTC.
+
+        Parameters
+        ----------
+        now_utc : datetime
+            The current datetime
+
+        Returns
+        -------
+        string
+            The run hour as a string (00, 03, 06 ...)
+        '''
+
+        h = now_utc.hour
+        run_hour = "00"
+
+        if h >= 2:
+            run_hour = "00"
+        if h >= 5:
+            run_hour = "03"
+        if h >= 8:
+            run_hour = "06"
+        if h >= 11:
+            run_hour = "09"
+        if h >= 14:
+            run_hour = "12"
+        if h >= 17:
+            run_hour = "15"
+        if h >= 20:
+            run_hour = "18"
+        if h >= 24 or h < 2:
+            run_hour = "21"
+
+        # self._currentRun = run_hour
+
+        return run_hour
+
 
 def downloadAndExtractBz2FileFromUrl(url, destFilePath=None, destFileName=None):
 
@@ -74,7 +115,9 @@ def downloadAndExtractBz2FileFromUrl(url, destFilePath=None, destFileName=None):
 # pressure_levels = [200, 250, 300, 400, 500, 600, 700, 850, 950, 975, 1000]
 
 para = ["t","qv","p"]
-time = "2024021015"
+CurrentRun = str(getCurrentRun(datetime.now(timezone.utc)))
+time = str(datetime.now().strftime('%Y%m%d')) + CurrentRun
+# print(time)
 level_start = 40 # highest level, starting with level 1
 level_end = 66 # lowest level, ending with level 65
 # Loop over timesteps
@@ -86,7 +129,8 @@ for t in range(0, 3):
 
        # Loop over model levels
        for i in range(level_start, level_end):
-             url = "https://opendata.dwd.de/weather/nwp/icon-d2/grib/15/t/icon-d2_germany_regular-lat-lon_model-level_"+time+"_"+str(t).zfill(3)+"_"+str(i)+"_t.grib2.bz2"
+                  # https://opendata.dwd.de/weather/nwp/icon-d2/grib/12/t/icon-d2_germany_regular-lat-lon_model-level_2024021212_000_40_t.grib2.bz2
+             url = "https://opendata.dwd.de/weather/nwp/icon-d2/grib/"+CurrentRun+"/t/icon-d2_germany_regular-lat-lon_model-level_"+time+"_"+str(t).zfill(3)+"_"+str(i)+"_t.grib2.bz2"
              # print(url)
              result = downloadAndExtractBz2FileFromUrl(url)
              file_list_t.append(result)
@@ -98,7 +142,7 @@ for t in range(0, 3):
        # Get qv (specific humidity) over all model levels
        for i in range(level_start, level_end):
              #      https://opendata.dwd.de/weather/nwp/icon-d2/grib/15/qv/icon-d2_germany_regular-lat-lon_model-level_2024020915_006_27_qv.grib2.bz2
-             url = "https://opendata.dwd.de/weather/nwp/icon-d2/grib/15/qv/icon-d2_germany_regular-lat-lon_model-level_"+time+"_"+str(t).zfill(3)+"_"+str(i)+"_qv.grib2.bz2"
+             url = "https://opendata.dwd.de/weather/nwp/icon-d2/grib/"+CurrentRun+"/qv/icon-d2_germany_regular-lat-lon_model-level_"+time+"_"+str(t).zfill(3)+"_"+str(i)+"_qv.grib2.bz2"
              # print(url)
              result = downloadAndExtractBz2FileFromUrl(url)
              file_list_qv.append(result)
@@ -110,7 +154,7 @@ for t in range(0, 3):
        # Get p (pressure) over all model levels
        for i in range(level_start, level_end):
              #      https://opendata.dwd.de/weather/nwp/icon-d2/grib/15/p/icon-d2_germany_regular-lat-lon_model-level_2024021015_006_6_p.grib2.bz2
-             url = "https://opendata.dwd.de/weather/nwp/icon-d2/grib/15/p/icon-d2_germany_regular-lat-lon_model-level_"+time+"_"+str(t).zfill(3)+"_"+str(i)+"_p.grib2.bz2"
+             url = "https://opendata.dwd.de/weather/nwp/icon-d2/grib/"+CurrentRun+"/p/icon-d2_germany_regular-lat-lon_model-level_"+time+"_"+str(t).zfill(3)+"_"+str(i)+"_p.grib2.bz2"
              # print(url)
              result = downloadAndExtractBz2FileFromUrl(url)
              file_list_p.append(result)
