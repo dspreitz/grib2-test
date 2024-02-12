@@ -1,3 +1,4 @@
 *.idx
 *.grib2
-
+*.swp
+saved_on_disk.nc
