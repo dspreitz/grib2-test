@@ -181,7 +181,25 @@ for t in range(0, 3):
 # print(ds0.coords['valid_time'].values)
 
 ds0.to_netcdf("saved_on_disk.nc")
+
+# ds0 = xr.open_dataset("saved_on_disk.nc")
+# Geographical Position of EDNC: 49.021205,11.4835479
+print("%%%%%%%%%%%%%%%%%%%%%%%%")
+print(ds0)
+print("%%%%%%%%%%%%%%%%%%%%%%%%")
+print(ds0.coords.values)
+for t in ds0.coords['valid_time'].values:
+       print(t)
+       ds0.sel(time=t, method='nearest').values
+       for p in ds0.data_vars:
+             print(p)
+             # print(ds0.sel(time=t).interp(latitude=49.021205, longitude=11.4835479)[p].values)
+             # print(ds0.sel(latitude=49.021205, longitude=11.4835479, method='nearest', valid_time=t)[p].values)
+
+
 quit()
+
+
 # EDNC: 49.021205,11.4835479
 print("%%%%%%%%%%%%%%%%%%%%%%%%")
 for t in ds0.coords['time'].values:
